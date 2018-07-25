@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "dependencies": {
     "dotenv": "^6.0.0",
+    "drone-node": "^1.0.1",
+    "joi": "^13.4.0",
     "parse-env": "^0.5.0",
     "sanitize-filename": "^1.6.1",
     "winston": "^3.0.0"

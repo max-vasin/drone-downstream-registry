@@ -1,4 +1,5 @@
 const path = require('path');
+const joi = require('joi');
 
 if (process.env['PLUGIN_PARAMS'])
   require('dotenv').config({ path: path.resolve(process.cwd(), process.env['PLUGIN_PARAMS'])});
@@ -9,13 +10,18 @@ const toArray = (p, name) => {
   p[name] = !p[name].trim() ? [] : p[name].split(',').map((item) => item.trim());
 };
 
-const template = {
+const toObject = (p, name) => {
+  p[name] = !p[name].trim() ? {} : JSON.parse(p[name]);
+};
+
+let params = parseEnv(process.env, {
   plugin: {
     action: '',
     repositories: '',
     registryPath: '',
-    onSuccess: '',
-    onFailure: ''
+    success: '',
+    failure: '',
+    server: ''
   },
   registry: {
     downstream: 'false',
@@ -28,45 +34,62 @@ const template = {
       number: 0
     },
     repo: ''
+  },
+  secret: {
+    serverToken: ''
   }
-};
-
-const params = parseEnv(process.env, template);
+});
 
 params.registry.downstream = params.registry.downstream.toLowerCase() === 'true';
 toArray(params.plugin, 'repositories');
-toArray(params.plugin, 'onSuccess');
-toArray(params.plugin, 'onFailure');
+toObject(params.plugin, 'success');
+toObject(params.plugin, 'failure');
 
 // Skip verification if no downstream build flag
 if (params.registry.downstream) {
-  if (!params.plugin.registryPath)
-    throw new Error('Registry path not specified');
+  const schema = joi.object().keys({
+    plugin: joi.object().keys({
+      action: joi.string().valid('package-build', 'downstream-build').required(),
+      repositories: joi.array().when('action', { is: 'package-build', then: joi.array().min(1).required() }),
+      registryPath: joi.string().trim().required(),
+      server: joi.string().uri({ scheme: ['http', 'https']}),
+      success: joi.object().keys({
+        repository: joi.string().trim().default(joi.ref('$currentRepo')),
+        environment: joi.string().trim().default('downstream-success')
+      }).when('action', { is: 'package-build', then: joi.object().required() }),
+      failure: joi.object().keys({
+        repository: joi.string().trim().default(joi.ref('$currentRepo')),
+        environment: joi.string().trim().default('downstream-failure')
+      }).when('action', { is: 'package-build', then: joi.object().required() })
+    }),
+    registry: joi.object().keys({
+      downstream: joi.boolean().required(),
+      package: joi.string().trim().required(),
+      version: joi.string().trim().required()
+    }).required(),
+    drone: joi.object().keys({
+      build: joi.object().keys({
+        status: joi.string().required(),
+        number: joi.number().min(1).required()
+      }),
+      repo: joi.string().required()
+    }).required(),
+    secret: joi.object().keys({
+      serverToken: joi.string().required()
+    }).required()
+  });
 
-  if (!params.registry.package)
-    throw new Error('Package not specified');
+  const result = joi.validate(params, schema, {
+    abortEarly: false,
+    context: {
+      currentRepo: params.drone.repo
+    }
+  });
 
-  if (!params.registry.version)
-    throw new Error('Version not specified');
+  if (result.error)
+    throw result.error;
 
-  switch (params.plugin.action) {
-    case 'package-build':
-      if (!params.plugin.repositories.length)
-        throw new Error('No downstream repositories specified');
-      break;
-
-    case 'downstream-build':
-      if (!params.drone.repo)
-        throw new Error('downstream-build should provide self repository name (DRONE_REPO)');
-      if (!params.drone.build.status)
-        throw new Error('downstream-build should provide build status (DRONE_BUILD_STATUS)');
-      if (!params.drone.build.number)
-        throw new Error('downstream-build should provide build number (DRONE_BUILD_NUMBER)');
-      break;
-
-    default:
-      throw new Error(`Unknown plugin action (${params.plugin.action})`);
-  }
+  params = result.value;
 }
 
 module.exports = params;
