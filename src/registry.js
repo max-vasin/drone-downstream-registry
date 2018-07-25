@@ -35,7 +35,7 @@ module.exports = (storage) => {
       return Object.keys(buildsMap).reduce((result, repo) => {
         const status = buildsMap[repo];
         if (log)
-          log.info(`\t${repo}:\t${status}`);
+          log.info(`\t${repo}:${status}`);
         if (priority.indexOf(result) < priority.indexOf(status))
           return result;
         return status;
