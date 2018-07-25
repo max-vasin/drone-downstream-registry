@@ -19,9 +19,8 @@ try {
   log.info('Building registry');
   const registry = require('./registry')(storage);
 
-
-  Object.keys(process.env).forEach((name) => log.info(`${name}=${process.env[name]}`));
-
+  // Dumps all exposed env vars
+  // Object.keys(process.env).forEach((name) => log.info(`${name}=${process.env[name]}`));
 
   switch (params.plugin.action) {
     case 'package-build':
@@ -42,9 +41,9 @@ try {
       registry.registerDownstreamBuild(
         params.registry.package,
         params.registry.version,
-        params.registry.buildRepo,
-        params.registry.buildStatus,
-        params.registry.buildNumber
+        params.drone.repo,
+        params.drone.build.status,
+        params.drone.build.number
       );
 
       const status = registry.currentPackageStatus(

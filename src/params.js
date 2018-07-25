@@ -13,10 +13,14 @@ const template = {
   registry: {
     downstream: 'false',
     package: '',
-    version: '',
-    buildStatus: '',
-    buildRepo: '',
-    buildNumber: ''
+    version: ''
+  },
+  drone: {
+    build: {
+      status: '',
+      number: 0
+    },
+    repo: ''
   }
 };
 
@@ -46,12 +50,12 @@ if (params.registry.downstream) {
       break;
 
     case 'downstream-build':
-      if (!params.registry.buildRepo)
-        throw new Error('downstream-build should provide self repository name');
-      if (!params.registry.buildStatus)
-        throw new Error('downstream-build should provide build status (success, failure)');
-      if (!params.registry.buildNumber)
-        throw new Error('downstream-build should provide build number');
+      if (!params.drone.repo)
+        throw new Error('downstream-build should provide self repository name (DRONE_REPO_NAME)');
+      if (!params.drone.build.status)
+        throw new Error('downstream-build should provide build status (DRONE_BUILD_STATUS)');
+      if (!params.drone.build.number)
+        throw new Error('downstream-build should provide build number (DRONE_BUILD_NUMBER)');
       break;
 
     default:
