@@ -21,7 +21,7 @@ try {
   const registry = require('./registry')(storage);
 
   // Dumps all exposed env vars
-  // Object.keys(process.env).forEach((name) => log.info(`${name}=${process.env[name]}`));
+  Object.keys(process.env).forEach((name) => log.info(`${name}=${process.env[name]}`));
 
   switch (params.plugin.action) {
     case 'package-build':
