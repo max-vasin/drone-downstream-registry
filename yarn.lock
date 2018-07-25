@@ -2,6 +2,20 @@
 # yarn lockfile v1
 
 
+annois@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/annois/-/annois-0.3.0.tgz#05c5bc5900e8286817e88684b8e7e348a9e24344"
+
+annois@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/annois/-/annois-0.3.2.tgz#6f6169ee374f84d0fd00db589c5b403db4f94b05"
+
+annotate@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/annotate/-/annotate-0.9.1.tgz#38303e656844e4cc174760e3443b23bf65472bd3"
+  dependencies:
+    annois "0.3.0"
+
 async@^2.6.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
@@ -63,6 +77,10 @@ diagnostics@^1.0.1:
     enabled "1.0.x"
     kuler "1.0.x"
 
+dotenv@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-6.0.0.tgz#24e37c041741c5f4b25324958ebbc34bca965935"
+
 enabled@1.0.x:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/enabled/-/enabled-1.0.2.tgz#965f6513d2c2d1c5f4652b64a2e3396467fc2f93"
@@ -117,6 +135,10 @@ logform@^1.9.0:
     ms "^2.1.1"
     triple-beam "^1.2.0"
 
+lower-case@^1.1.1:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/lower-case/-/lower-case-1.1.4.tgz#9a2cabd1b9e8e0ae993a4bf7d5875c39c42e8eac"
+
 ms@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
@@ -124,6 +146,14 @@ ms@^2.1.1:
 one-time@0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/one-time/-/one-time-0.0.4.tgz#f8cdf77884826fe4dff93e3a9cc37b1e4480742e"
+
+parse-env@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/parse-env/-/parse-env-0.5.0.tgz#f9d8ff30cfe1132f2b6052e35e922a1def85a671"
+  dependencies:
+    annois "^0.3.2"
+    annotate "^0.9.1"
+    snake-case "^1.1.1"
 
 process-nextick-args@~2.0.0:
   version "2.0.0"
@@ -145,11 +175,23 @@ safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
 
+sentence-case@^1.1.2:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/sentence-case/-/sentence-case-1.1.3.tgz#8034aafc2145772d3abe1509aa42c9e1042dc139"
+  dependencies:
+    lower-case "^1.1.1"
+
 simple-swizzle@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/simple-swizzle/-/simple-swizzle-0.2.2.tgz#a4da6b635ffcccca33f70d17cb92592de95e557a"
   dependencies:
     is-arrayish "^0.3.1"
+
+snake-case@^1.1.1:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/snake-case/-/snake-case-1.1.2.tgz#0c2f25e305158d9a18d3d977066187fef8a5a66a"
+  dependencies:
+    sentence-case "^1.1.2"
 
 stack-trace@0.0.x:
   version "0.0.10"

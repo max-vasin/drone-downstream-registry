@@ -1,10 +1,50 @@
 #!/usr/bin/env node
-
 const log = require('./logger');
 
-log.info('Hello from plugin!');
+log.info('Drone downstream registry plugin');
 
-Object.keys(process.env).forEach((name) => {
-  if (name.startsWith('PLUGIN'))
-    log.info(`${name}=${process.env[name]}`);
-});
+try {
+  log.info('Reading and verifying parameters');
+  const params = require('./params');
+
+  log.info('Building registry file storage');
+  const storage = require('./fileStorage')(params.plugin.registryPath);
+
+  log.info('Building registry');
+  const registry = require('./registry')(storage);
+
+  switch (params.plugin.action) {
+    case 'package-build':
+      log.info('Executing [package-build]');
+      registry.createPackageEntry(
+        params.registry.package,
+        params.registry.version,
+        params.plugin.repositories
+      );
+      break;
+
+    case 'downstream-build':
+      log.info('Executing [downstream-build]');
+      registry.registerDownstreamBuild(
+        params.registry.package,
+        params.registry.version,
+        params.registry.buildRepo,
+        params.registry.buildStatus,
+        params.registry.buildNumber
+      );
+
+      const status = registry.currentPackageStatus(
+        params.registry.package,
+        params.registry.version
+      );
+
+      log.info(`Current package cumulative status: ${status.toUpperCase()}`);
+
+      break;
+  }
+} catch (e) {
+  log.error(`Error: ${e.message}`);
+  process.exit(1);
+}
+
+
