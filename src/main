@@ -28,7 +28,9 @@ try {
       registry.createPackageEntry(
         params.registry.package,
         params.registry.version,
-        params.plugin.repositories
+        params.plugin.repositories,
+        params.plugin.onSuccess,
+        params.plugin.onFailure
       );
       log.info(`Successfully registered package ${params.registry.package} version ${params.registry.version}`);
       log.info(`Awaiting downstream builds:`);

@@ -1,11 +1,13 @@
 module.exports = (storage) => {
   return {
-    createPackageEntry: (name, version, repositories) => {
+    createPackageEntry: (name, version, repositories, onSuccess, onFailure) => {
       storage.setEntry(name, version, {
         package: name,
         version: version,
         repositories,
-        builds: {}
+        builds: {},
+        onSuccess,
+        onFailure
       });
     },
     registerDownstreamBuild: (name, version, repo, status, number) => {

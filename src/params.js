@@ -10,8 +10,8 @@ const template = {
     action: '',
     repositories: '',
     registryPath: '',
-    success: '',
-    failure: ''
+    onSuccess: '',
+    onFailure: ''
   },
   registry: {
     downstream: 'false',
