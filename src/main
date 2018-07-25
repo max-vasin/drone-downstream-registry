@@ -7,6 +7,12 @@ try {
   log.info('Reading and verifying parameters');
   const params = require('./params');
 
+  if (!params.registry.downstream) {
+    log.info(`Downstream build flag not set`);
+    log.info(`Assume normal build. Exiting.`);
+    return;
+  }
+
   log.info('Building registry file storage');
   const storage = require('./fileStorage')(params.plugin.registryPath);
 
@@ -21,6 +27,10 @@ try {
         params.registry.version,
         params.plugin.repositories
       );
+      log.info(`Successfully registered package ${params.registry.package} version ${params.registry.version}`);
+      log.info(`Awaiting downstream builds:`);
+      params.plugin.repositories.forEach((repo) => log.info(`\t${repo}`));
+
       break;
 
     case 'downstream-build':
