@@ -1,5 +1,8 @@
 const path = require('path');
-require('dotenv').config({ path: path.resolve(process.cwd(), process.env['PLUGIN_PARAMS'])});
+
+if (process.env['PLUGIN_PARAMS'])
+  require('dotenv').config({ path: path.resolve(process.cwd(), process.env['PLUGIN_PARAMS'])});
+
 const parseEnv = require('parse-env');
 
 const template = {
