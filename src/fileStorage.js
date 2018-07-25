@@ -1,10 +1,11 @@
 const path = require('path');
 const fs = require('fs');
 const log = require('./logger');
+const sanitize = require('sanitize-filename');
 
 module.exports = (registryPath) => {
   const getEntryPath = (name, version) => {
-    return path.resolve(registryPath, `${name}@${version}`);
+    return path.resolve(registryPath, sanitize(`${name}@${version}`));
   };
 
   return {
