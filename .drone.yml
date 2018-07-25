@@ -1,0 +1,5 @@
+pipeline:
+  docker:
+    image: plugins/docker
+    repo: maxvasin/drone-downstream-registry
+    secrets: [ docker_username, docker_password ]

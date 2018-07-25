@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+const log = require('./logger');
+
+log.info('Hello from plugin!');
+
+Object.keys(process.env).forEach((name) => {
+  if (name.startsWith('PLUGIN'))
+    log.info(`${name}=${process.env[name]}`);
+});
