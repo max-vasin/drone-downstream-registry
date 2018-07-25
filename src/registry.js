@@ -13,7 +13,7 @@ module.exports = (storage) => {
       entry.builds[repo] = { status, number };
       storage.setEntry(name, version, entry);
     },
-    currentPackageStatus: (name, version) => {
+    currentPackageStatus: (name, version, log) => {
       const entry = storage.getEntry(name, version);
 
       const buildsMap = {};
@@ -29,8 +29,13 @@ module.exports = (storage) => {
         'success'
       ];
 
+      if (log)
+        log.info(`Current downstream repositories statuses:`);
+
       return Object.keys(buildsMap).reduce((result, repo) => {
         const status = buildsMap[repo];
+        if (log)
+          log.info(`\t${repo}:\t${status}`);
         if (priority.indexOf(result) < priority.indexOf(status))
           return result;
         return status;

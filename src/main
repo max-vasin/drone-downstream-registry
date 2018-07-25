@@ -38,6 +38,13 @@ try {
 
     case 'downstream-build':
       log.info('Executing [downstream-build]');
+      log.info(`Package ${params.registry.package} version ${params.registry.version}`);
+      log.info(`
+        Downstream repo ${params.drone.repo} 
+        build ${params.drone.build.number} 
+        status ${params.drone.build.status}
+      `);
+
       registry.registerDownstreamBuild(
         params.registry.package,
         params.registry.version,
@@ -48,7 +55,8 @@ try {
 
       const status = registry.currentPackageStatus(
         params.registry.package,
-        params.registry.version
+        params.registry.version,
+        log
       );
 
       log.info(`Current package cumulative status: ${status.toUpperCase()}`);
