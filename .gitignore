@@ -1,4 +1,5 @@
 .data
 .idea
 .entry
+handler.sh
 node_modules

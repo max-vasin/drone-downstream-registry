@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const log = require('./logger');
+const execute = require('./shell');
 
 log.info('Drone downstream registry plugin');
 
@@ -59,10 +60,19 @@ try {
 
       log.info(`Current package cumulative status: ${status.toUpperCase()}`);
 
+      if (status !== 'waiting') {
+        log.info(`Executing handler (if any) for status`);
+        execute(registry.getHandler(
+          params.registry.package,
+          params.registry.version,
+          status
+        ));
+      }
+
       break;
   }
 } catch (e) {
-  log.error(`Error: ${e.message}`);
+  log.error(`Error: ${e.stack}`);
   process.exit(1);
 }
 

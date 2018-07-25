@@ -5,6 +5,10 @@ if (process.env['PLUGIN_PARAMS'])
 
 const parseEnv = require('parse-env');
 
+const toArray = (p, name) => {
+  p[name] = !p[name].trim() ? [] : p[name].split(',').map((item) => item.trim());
+};
+
 const template = {
   plugin: {
     action: '',
@@ -30,10 +34,9 @@ const template = {
 const params = parseEnv(process.env, template);
 
 params.registry.downstream = params.registry.downstream.toLowerCase() === 'true';
-params.plugin.repositories =
-  params.plugin.repositories !== '' ?
-    params.plugin.repositories.split(',').map((item) => item.trim()) :
-    [];
+toArray(params.plugin, 'repositories');
+toArray(params.plugin, 'onSuccess');
+toArray(params.plugin, 'onFailure');
 
 // Skip verification if no downstream build flag
 if (params.registry.downstream) {
@@ -54,7 +57,7 @@ if (params.registry.downstream) {
 
     case 'downstream-build':
       if (!params.drone.repo)
-        throw new Error('downstream-build should provide self repository name (DRONE_REPO_NAME)');
+        throw new Error('downstream-build should provide self repository name (DRONE_REPO)');
       if (!params.drone.build.status)
         throw new Error('downstream-build should provide build status (DRONE_BUILD_STATUS)');
       if (!params.drone.build.number)

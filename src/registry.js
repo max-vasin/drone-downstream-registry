@@ -6,8 +6,10 @@ module.exports = (storage) => {
         version: version,
         repositories,
         builds: {},
-        onSuccess,
-        onFailure
+        handlers: {
+          success: onSuccess,
+          failure: onFailure
+        }
       });
     },
     registerDownstreamBuild: (name, version, repo, status, number) => {
@@ -42,6 +44,9 @@ module.exports = (storage) => {
           return result;
         return status;
       }, 'success');
+    },
+    getHandler: (name, version, status) => {
+      return storage.getEntry(name, version).handlers[status];
     }
   }
 };
