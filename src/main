@@ -83,7 +83,11 @@ try {
           })
             .then(() => {
               log.info(`Registering entry as handled`);
-
+              registry.registerHandlerExecution(
+                params.registry.package,
+                params.registry.version,
+                status
+              );
             })
             .catch(err => {
               log.error(`Cannot deploy build`);
