@@ -73,15 +73,17 @@ try {
 
         const client = new drone({ url: handler.server, token: params.secret.serverToken });
 
-        client.deploy(handler.repository, handler.build, handler.environment)
-          .then(() => {
-            log.info(`Deployment pipeline executed`)
+        log.info(`Executing deployment pipeline`);
+        client.deploy(handler.repository, handler.build, handler.environment, {
+            REGISTRY_PACKAGE: params.registry.package,
+            REGISTRY_VERSION: params.registry.version
           })
+          .then(() => log.info(`Deployment pipeline executed`))
           .catch(err => {
             log.error(`Cannot deploy build`);
             log.error(err.message);
             process.exit(1);
-          })
+          });
       }
       break;
   }

@@ -1,4 +1,6 @@
 const Wreck = require('wreck');
+const qs = require('querystring');
+const log = require('./logger');
 
 class Client {
   constructor(config) {
@@ -9,40 +11,22 @@ class Client {
       }
     });
 
-    this._request = (method, url, options) => {
-
-      return new Promise((resolve, reject) => {
-
-        this._wreck.request(method, url, options, (err, res) => {
-
-          if (err) {
-            return reject(err);
-          }
-
-          if (res.statusCode < 200 ||
-            res.statusCode >= 300) {
-
-            const e = new Error('Invalid response code: ' + res.statusCode);
-            e.statusCode = res.statusCode;
-            e.headers = res.headers;
-            return reject(e);
-          }
-
-          this._wreck.read(res, { json: true }, (err, payload) => {
-
-            if (err) {
-              return reject(err);
-            }
-
-            return resolve(payload);
-          });
-        });
-      });
-    };
+    this._request = (method, url, options) =>
+        this._wreck.request(method, url, options)
+          .then(res => Wreck.read(res))
+          .then(body => body.toString());
   };
 
-  deploy(repo, build, env) {
-    return this._request('post', `/api/repos/${repo}/builds/${build}?event=deployment&deploy_to=${env}`);
+  deploy(repo, build, env, params) {
+    const query = Object.assign({}, params);
+    query['event'] = 'deployment';
+    query['deploy_to'] = env;
+
+    const url = `/api/repos/${repo}/builds/${build}?${qs.stringify(query)}`;
+
+    log.info(`POST: ${url}`);
+
+    return this._request('post', url);
   }
 }
 
