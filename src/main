@@ -62,28 +62,38 @@ try {
       log.info(`Current package cumulative status: ${status.toUpperCase()}`);
 
       if (status !== 'waiting') {
-        const handler = registry.getHandler(
+        const handlers = registry.getHandlers(
           params.registry.package,
-          params.registry.version,
-          status
+          params.registry.version
         );
 
-        log.info(`Enqueue deployment pipeline of repository ${handler.repository} build ${handler.build} with environment ${handler.environment} `);
-        log.info(`Building drone client ${handler.server}`);
+        if (!handlers.executedHandler) {
 
-        const client = new drone({ url: handler.server, token: params.secret.serverToken });
+          const handler = handlers[status];
 
-        log.info(`Executing deployment pipeline`);
-        client.deploy(handler.repository, handler.build, handler.environment, {
+          log.info(`Enqueue deployment pipeline of repository ${handler.repository} build ${handler.build} with environment ${handler.environment} `);
+          log.info(`Building drone client ${handler.server}`);
+
+          const client = new drone({ url: handler.server, token: params.secret.serverToken });
+
+          log.info(`Executing deployment pipeline`);
+          client.deploy(handler.repository, handler.build, handler.environment, {
             REGISTRY_PACKAGE: params.registry.package,
             REGISTRY_VERSION: params.registry.version
           })
-          .then(() => log.info(`Deployment pipeline executed`))
-          .catch(err => {
-            log.error(`Cannot deploy build`);
-            log.error(err.message);
-            process.exit(1);
-          });
+            .then(() => {
+              log.info(`Registering entry as handled`);
+
+            })
+            .catch(err => {
+              log.error(`Cannot deploy build`);
+              log.error(err.message);
+              process.exit(1);
+            });
+
+        } else {
+          log.info(`Handler for status [${handlers.executedHandler}] already executed. Skipping execution.`);
+        }
       }
       break;
   }

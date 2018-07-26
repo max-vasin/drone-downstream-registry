@@ -8,7 +8,8 @@ module.exports = (storage) => {
         builds: {},
         handlers: {
           success: Object.assign({}, success, { server }),
-          failure: Object.assign({}, failure, { server })
+          failure: Object.assign({}, failure, { server }),
+          executedHandler: ''
         }
       });
     },
@@ -45,8 +46,13 @@ module.exports = (storage) => {
         return status;
       }, 'success');
     },
-    getHandler: (name, version, status) => {
-      return storage.getEntry(name, version).handlers[status];
+    getHandlers: (name, version) => {
+      return storage.getEntry(name, version).handlers;
+    },
+    registerHandlerExecution: (name, version, status) => {
+      const entry = storage.getEntry(name, version);
+      entry.handlers.executedHandler = status;
+      storage.setEntry(name, version, entry);
     }
   }
 };
