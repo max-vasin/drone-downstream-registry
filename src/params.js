@@ -55,10 +55,12 @@ if (params.registry.downstream) {
       server: joi.string().uri({ scheme: ['http', 'https']}),
       success: joi.object().keys({
         repository: joi.string().trim().default(joi.ref('$currentRepo')),
+        build: joi.number().min(1).default(joi.ref('$currentBuild')),
         environment: joi.string().trim().default('downstream-success')
       }).when('action', { is: 'package-build', then: joi.object().required() }),
       failure: joi.object().keys({
         repository: joi.string().trim().default(joi.ref('$currentRepo')),
+        build: joi.number().min(1).default(joi.ref('$currentBuild')),
         environment: joi.string().trim().default('downstream-failure')
       }).when('action', { is: 'package-build', then: joi.object().required() })
     }),
@@ -82,7 +84,8 @@ if (params.registry.downstream) {
   const result = joi.validate(params, schema, {
     abortEarly: false,
     context: {
-      currentRepo: params.drone.repo
+      currentRepo: params.drone.repo,
+      currentBuild: params.drone.build.number
     }
   });
 

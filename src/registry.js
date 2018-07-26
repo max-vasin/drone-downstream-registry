@@ -1,14 +1,14 @@
 module.exports = (storage) => {
   return {
-    createPackageEntry: (name, version, repositories, onSuccess, onFailure) => {
+    createPackageEntry: (name, version, repositories, success, failure, server) => {
       storage.setEntry(name, version, {
         package: name,
         version: version,
         repositories,
         builds: {},
         handlers: {
-          success: onSuccess,
-          failure: onFailure
+          success: Object.assign({}, success, { server }),
+          failure: Object.assign({}, failure, { server })
         }
       });
     },

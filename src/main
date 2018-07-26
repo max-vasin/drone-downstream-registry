@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const log = require('./logger');
-const execute = require('./shell');
+const drone = require('./drone');
 
 log.info('Drone downstream registry plugin');
 
@@ -30,8 +30,9 @@ try {
         params.registry.package,
         params.registry.version,
         params.plugin.repositories,
-        params.plugin.onSuccess,
-        params.plugin.onFailure
+        params.plugin.success,
+        params.plugin.failure,
+        params.plugin.server
       );
       log.info(`Successfully registered package ${params.registry.package} version ${params.registry.version}`);
       log.info(`Awaiting downstream builds:`);
@@ -61,14 +62,27 @@ try {
       log.info(`Current package cumulative status: ${status.toUpperCase()}`);
 
       if (status !== 'waiting') {
-        log.info(`Executing handler (if any) for status`);
-        execute(registry.getHandler(
+        const handler = registry.getHandler(
           params.registry.package,
           params.registry.version,
           status
-        ));
-      }
+        );
 
+        log.info(`Enqueue deployment pipeline of repository ${handler.repository} build ${handler.build} with environment ${handler.environment} `);
+        log.info(`Building drone client ${handler.server}`);
+
+        const client = new drone({ url: handler.server, token: params.secret.serverToken });
+
+        client.deploy(handler.repository, handler.build, handler.environment)
+          .then(() => {
+            log.info(`Deployment pipeline executed`)
+          })
+          .catch(err => {
+            log.error(`Cannot deploy build`);
+            log.error(err.message);
+            process.exit(1);
+          })
+      }
       break;
   }
 } catch (e) {
